@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import { getAllUsersApi } from "@/services/authService";
 import { getAllCommentsApi } from "@/services/commentService";

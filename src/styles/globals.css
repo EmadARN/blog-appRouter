@@ -257,7 +257,6 @@ table td {
   .post-comments .post-comments__answer .last-item:after {
     display: none;
   }
-
   .post-comments .post-comments__answer .answer-item::before {
     width: 3px;
     height: 14px;
