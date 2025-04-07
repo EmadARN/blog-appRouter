@@ -1,4 +1,4 @@
-export default function setCookiesOnReq(cookies) {
+export default async function setCookiesOnReq(cookies) {
   // cookies get from => 1. const cookies = cookies() OR 2: req.cookies
   const options = {
     headers: {

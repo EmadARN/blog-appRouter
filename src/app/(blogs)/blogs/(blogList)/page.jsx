@@ -11,7 +11,7 @@ async function Page({ searchParams }) {
   const awaitedSearchParams = await searchParams;
   const queries = queryString.stringify(awaitedSearchParams);
   // set headers:
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const options = setCookiesOnReq(cookieStore);
 
   // const res = await fetch(
@@ -24,7 +24,7 @@ async function Page({ searchParams }) {
 
   const { posts, totalPages } = await getAllPostsApi(queries, options);
 
-  const { q: searchValue } = searchParams;
+  const { q: searchValue } = await searchParams;
 
   const resultsText = posts.length > 1 ? "نتایج" : "نتیجه";
 

@@ -11,7 +11,7 @@ export default async function deletePost(prevState, { postId }) {
   //   revalidatePath("/profile/posts");
   //   redirect("/profile/posts");
   // } catch (error) {}
-  const cookieStore = cookies();
+  const cookieStore =await cookies();
 
   try {
     const options = setCookiesOnReq(cookieStore);

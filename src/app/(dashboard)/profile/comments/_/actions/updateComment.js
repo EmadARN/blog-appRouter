@@ -9,7 +9,7 @@ export default async function updateComment(
   prevState,
   { commentId, formData }
 ) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   const data = {
     status: formData.get("status"),

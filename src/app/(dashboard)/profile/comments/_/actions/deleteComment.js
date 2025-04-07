@@ -6,7 +6,7 @@ import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 export default async function deleteComment(prevState, { commentId }) {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   try {
     const options = setCookiesOnReq(cookieStore);

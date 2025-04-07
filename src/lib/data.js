@@ -7,7 +7,7 @@ import setCookiesOnReq from "@/utils/setCookieOnReq";
 import { cookies } from "next/headers";
 
 export async function fetchCardData() {
-  const cookieStore = cookies();
+  const cookieStore =await cookies();
   const options = setCookiesOnReq(cookieStore);
   try {
     const data = await Promise.all([
