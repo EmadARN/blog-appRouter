@@ -16,10 +16,17 @@ async function PostPage({ searchParams }) {
 
   return (
     <div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-secondary-700 mb-12 items-center">
-        <h1 className="text-secondary-700 font-bold text-xl">لیست پست ها</h1>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 text-secondary-700 mb-12 items-center ">
+        <div className="flex justify-between items-center">
+          <h1 className="text-secondary-700 font-bold text-xl">لیست پست ها</h1>
+          <div className="lg:hidden">
+            <CreatePost />
+          </div>
+        </div>
         <Search />
-        <CreatePost />
+        <div className="hidden lg:block">
+          <CreatePost />
+        </div>
       </div>
 
       <Suspense fallback={<Spinner />} key={query}>

@@ -1,22 +1,21 @@
 "use client";
-import { Controller, set, useForm } from "react-hook-form";
-import RHFTextField from "@/components/ui/RHFTextField";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import { yupResolver } from "@hookform/resolvers/yup";
-import Button from "@/components/ui/Button";
-import RHFSelect from "@/components/ui/RHFSelect";
-import * as yup from "yup";
-import useCategories from "@/hook/useCategory";
-import TextField from "@/components/ui/TextField";
-import { useEffect, useState } from "react";
 import Image from "next/image";
-import ButtonIcon from "@/components/ui/ButtonIcon";
-import { TrashIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import * as yup from "yup";
 import useCreatePost from "./useCreatePost";
-import useEditPost from "./useEditPost";
 import { useRouter } from "next/navigation";
+import useEditPost from "./useEditPost";
 import { imageUrlToFile } from "@/utils/fileFormatter";
-import { revalidatePath } from "next/cache";
-import Loading from "@/components/ui/Loading";
+import useCategories from "@/hook/useCategory";
+import RHFTextField from "@/components/ui/RHFTextField";
+import RHFSelect from "@/components/ui/RHFSelect";
+import FileInput from "@/components/ui/FileInput";
+import ButtonIcon from "@/components/ui/ButtonIcon";
+import Button from "@/components/ui/Button";
+import { SpinnerMini } from "@/components/ui/Spinner";
 
 const schema = yup
   .object({
@@ -49,58 +48,58 @@ function CreatePostForm({ postToEdit = {} }) {
   const {
     title,
     text,
-    briefText,
     slug,
+    briefText,
     readingTime,
     category,
     coverImage,
-    coverImageUrl: prevPostCoverImageUrl,
+    coverImageUrl: prevCoverImageUrl,
   } = postToEdit;
+
   let editValues = {};
   if (isEditSession) {
     editValues = {
       title,
       text,
-      briefText,
       slug,
+      briefText,
       readingTime,
       category: category._id,
-      coverImage,
+      coverImage, // https://floan.ir/upload/folan.png => File !!!
     };
   }
 
   const { categories } = useCategories();
+  const [coverImageUrl, setCoverImageUrl] = useState(prevCoverImageUrl || null);
   const { createPost, isCreating } = useCreatePost();
   const { editPost, isEditing } = useEditPost();
-  const [coverImageUrl, setCoverImageUrl] = useState(
-    prevPostCoverImageUrl || null
-  );
   const router = useRouter();
 
   const {
+    control,
+    reset,
     register,
     formState: { errors },
-    setValue,
     handleSubmit,
-    reset,
-    control,
+    setValue,
   } = useForm({
-    resolver: yupResolver(schema),
     mode: "onTouched",
+    resolver: yupResolver(schema),
     defaultValues: editValues,
   });
 
   useEffect(() => {
-    if (prevPostCoverImageUrl) {
-      async function fetchMyAPI() {
-        const file = await imageUrlToFile(prevPostCoverImageUrl);
+    if (prevCoverImageUrl) {
+      // convert preve link to file
+      async function fetchMyApi() {
+        const file = await imageUrlToFile(prevCoverImageUrl);
         setValue("coverImage", file);
       }
-      fetchMyAPI();
+      fetchMyApi();
     }
-  }, []);
+  }, [editId]);
 
-  const onSubmit = async (data) => {
+  const onSubmit = (data) => {
     const formData = new FormData();
 
     for (const key in data) {
@@ -114,7 +113,6 @@ function CreatePostForm({ postToEdit = {} }) {
           onSuccess: () => {
             reset();
             router.push("/profile/posts");
-            // revalidatePath(`/profile/posts/${editId}/edit`, "page");
           },
         }
       );
@@ -122,8 +120,6 @@ function CreatePostForm({ postToEdit = {} }) {
       createPost(formData, {
         onSuccess: () => {
           router.push("/profile/posts");
-          // revalidatePath("/profile/posts");
-          reset();
         },
       });
     }
@@ -132,94 +128,96 @@ function CreatePostForm({ postToEdit = {} }) {
   return (
     <form className="form" onSubmit={handleSubmit(onSubmit)}>
       <RHFTextField
-        label="عنوان"
         name="title"
-        register={register}
-        required
+        label="عنوان"
         errors={errors}
+        register={register}
+        isRequired
       />
       <RHFTextField
-        label="متن کوتاه"
         name="briefText"
-        register={register}
-        required
+        label="متن کوتاه"
         errors={errors}
+        register={register}
+        isRequired
       />
       <RHFTextField
-        label="متن"
         name="text"
-        register={register}
-        required
+        label="متن"
         errors={errors}
+        register={register}
+        isRequired
       />
       <RHFTextField
-        label="اسلاگ"
         name="slug"
-        register={register}
-        required
+        label="اسلاگ"
         errors={errors}
+        register={register}
+        isRequired
       />
       <RHFTextField
-        label="زمان مطالعه"
         name="readingTime"
-        register={register}
-        required
+        label="زمان مطالعه"
         errors={errors}
+        register={register}
+        isRequired
       />
       <RHFSelect
-        label="دسته بندی"
-        required
         name="category"
+        label="دسته بندی"
+        errors={errors}
         register={register}
+        isRequired
         options={categories}
       />
       <Controller
-        control={control}
         name="coverImage"
-        rules={{ required: "عکس کاور پست الزامی است" }}
-        render={({ field: { value, onChange, ...field } }) => {
+        control={control}
+        rules={{ required: "کاور پست الزامی است" }}
+        render={({ field: { value, onChange, ...rest } }) => {
           return (
-            <TextField
-              {...field}
+            <FileInput
+              label="انتخاب کاور پست"
+              name="coverImage"
+              isRequired
+              errors={errors}
+              {...rest}
               value={value?.fileName}
               onChange={(event) => {
                 const file = event.target.files[0];
+                console.log(file);
                 onChange(file);
                 setCoverImageUrl(URL.createObjectURL(file));
+                event.target.value = null;
               }}
-              label="کاور پست"
-              type="file"
-              id="coverImage"
             />
           );
         }}
       />
 
       {coverImageUrl && (
-        <div className="relative aspect-w-16 aspect-h-9 overflow-hidden rounded-lg">
+        <div className="relative aspect-w-16 aspect-h-16 overflow-hidden rounded-lg">
           <Image
-            className="object-cover object-center"
             fill
             alt="cover-iamge"
             src={coverImageUrl}
+            className="object-cover object-center"
           />
           <ButtonIcon
-            type="button"
             onClick={() => {
               setCoverImageUrl(null);
               setValue("coverImage", null);
             }}
             variant="red"
-            className="w-6 h-6 absolute !left-0"
+            className="w-6 h-6 absolute left-4 top-4"
           >
             <XMarkIcon />
           </ButtonIcon>
         </div>
       )}
-
       <div>
         {isCreating || isEditing ? (
-          <Loading />
+          <SpinnerMini />
         ) : (
           <Button variant="primary" type="submit" className="w-full">
             تایید

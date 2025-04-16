@@ -43,7 +43,7 @@ const sidebarNavs = [
   },
 ];
 
-export default function SideBarNavs() {
+export default function SideBarNavs({ onClose }) {
   const router = useRouter();
   return (
     <ul className="space-y-2">

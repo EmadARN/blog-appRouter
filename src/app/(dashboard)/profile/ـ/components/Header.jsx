@@ -5,9 +5,13 @@ import Avatar from "@/components/ui/Avatar";
 import { useAuth } from "@/context/AuthContext";
 import Loading from "@/components/ui/Loading";
 import { HeaderSkeleton } from "./Skeletons";
+import { useState } from "react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import Drawer from "@/components/ui/Drawer";
+import SideBar from "./SideBar";
 
 function Header({}) {
-  // const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+  const [isOpenDrawer, setIsOpenDrawer] = useState(false);
   const { user, isLoading } = useAuth();
   return (
     <header
@@ -15,6 +19,13 @@ function Header({}) {
     >
       <div className="flex items-center justify-between py-5 px-4 lg:px-8">
         <div className="flex items-center gap-x-3">
+          <ButtonIcon
+            className="block lg:hidden border-none"
+            variant="outline"
+            onClick={() => setIsOpenDrawer(!isOpenDrawer)}
+          >
+            {isOpenDrawer ? <XMarkIcon /> : <Bars3Icon />}
+          </ButtonIcon>
           <div className="flex flex-col lg:flex-row justify-start lg:items-center gap-x-2">
             <span className="text-sm lg:text-lg font-bold text-secondary-700">
               سلام؛ {user?.name}
@@ -31,6 +42,9 @@ function Header({}) {
             </ButtonIcon>
           </Link>
         </div>
+        <Drawer open={isOpenDrawer} onClose={() => setIsOpenDrawer(false)}>
+          <SideBar onClose={() => setIsOpenDrawer(false)} />
+        </Drawer>
       </div>
     </header>
   );

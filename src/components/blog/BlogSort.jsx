@@ -48,7 +48,7 @@ function BlogSort() {
   );
 
   return (
-    <Select
+    <Select 
       onChange={(e) => {
         // <pathname>?sort=asc
         setSort(e.target.value);

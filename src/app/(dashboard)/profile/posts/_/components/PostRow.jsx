@@ -1,10 +1,8 @@
-import ButtonIcon from "@/components/ui/ButtonIcon";
 import Table from "@/components/ui/Table";
 import { toLocalDateShort } from "@/utils/dateFormatter";
 import truncateText from "@/utils/trancateText";
-import { PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
-import classNames from "classnames";
 import { DeletePost, UpdatePost } from "./Buttons";
+import { toPersianDigits } from "@/utils/numberFormatter";
 
 const statusStyle = {
   free: {
@@ -19,9 +17,10 @@ const statusStyle = {
 
 function PostRow({ post, index }) {
   const { title, category, author, createdAt, type } = post;
+
   return (
     <Table.Row>
-      <td>{index + 1}</td>
+      <td>{toPersianDigits(index + 1)}</td>
       <td>{truncateText(title, 30)}</td>
       <td> {category.title}</td>
       <td>{author.name}</td>
